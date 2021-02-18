@@ -4,7 +4,7 @@ name: CI
 on: push
 
 jobs:
-  Linter:
+  lint:
     name: Lint Code Base
     runs-on: ubuntu-latest
     steps:
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-          
+
       - name: unittests
         run: |
           pip install -r requirements.txt
