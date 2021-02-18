@@ -10,8 +10,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       - name: Lint Code Base
         uses: github/super-linter@v3
@@ -19,3 +17,39 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: dojo
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sast:
+    name: Static Code Analysis Tests
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: sast
+        run: |
+          pip install -r requirements.txt
+          bandit app.py
+
+  test:
+    name: Launch Unit Tests
+    runs-on: ubuntu-latest
+    needs:
+      - sast
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          
+      - name: unittests
+        run: |
+          pip install -r requirements.txt
+          python -m pytest
